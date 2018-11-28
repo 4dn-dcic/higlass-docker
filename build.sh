@@ -4,7 +4,8 @@ set -e
 # keep these updated with http://higlass.io/version.txt
 SERVER_VERSION='1.7.7'
 WEBSITE_VERSION='0.6.32'
-LIBRARY_VERSION='1.2.0'  # upgraded past ref for horizontal-1d-annotations
+# LIBRARY_VERSION upgraded past ref for horizontal-1d-annotations
+LIBRARY_VERSION='1.2.0'
 MULTIVEC_VERSION='0.2.0-alpha.3'
 HGTILES_VERSION='0.2.2'
 CLODIUS_VERSION='0.9.1'
