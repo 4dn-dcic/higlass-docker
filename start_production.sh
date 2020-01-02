@@ -18,6 +18,19 @@ usage() {
   exit 1
 }
 
+# check all AWS_BUCKET env variables - if not present we should bail
+check_var() {
+  if [ -z $1 ]; then
+    echo "Did not find a required environment variable"
+    exit 1
+  fi
+}
+check_var "$AWS_BUCKET"
+check_var "$AWS_BUCKET2"
+check_var "$AWS_BUCKET3"
+check_var "$AWS_BUCKET4"
+
+
 while getopts 'i:s:p:v:' OPT; do
   case $OPT in
     i)
