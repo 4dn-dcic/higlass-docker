@@ -18,9 +18,9 @@ usage() {
   exit 1
 }
 
-# check all AWS_BUCKET env variables - if not present we should bail
+# check all AWS_BUCKET env variables - if not present we should bail.
 check_var() {
-  if [ -z $1 ]; then
+  if [ -z "$1" ]; then
     echo "Did not find a required environment variable"
     exit 1
   fi
