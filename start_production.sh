@@ -5,7 +5,7 @@ set -v
 # Docker image is pinned here, so that you can checkout older
 # versions of this script, and get reproducible deployments.
 # DOCKER_VERSION is the version of 4dndcic/higlass-docker
-DOCKER_VERSION=v0.0.2
+DOCKER_VERSION=v0.0.3
 IMAGE=4dndcic/higlass-docker:$DOCKER_VERSION
 STAMP=`date +"%Y-%m-%d_%H-%M-%S"`
 PORT=80
