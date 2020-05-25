@@ -5,7 +5,7 @@ set -v
 # Docker image is pinned here, so that you can checkout older
 # versions of this script, and get reproducible deployments.
 # DOCKER_VERSION is the version of 4dndcic/higlass-docker
-DOCKER_VERSION=v0.0.3
+DOCKER_VERSION=v0.0.4
 IMAGE=4dndcic/higlass-docker:$DOCKER_VERSION
 STAMP=`date +"%Y-%m-%d_%H-%M-%S"`
 PORT=80
@@ -72,7 +72,7 @@ docker run --name $REDIS_HOST \
            --network network-$STAMP \
            --volume $VOLUME/redis-data:/data \
            --volume $SCRIPT_DIR/redis-context/redis.conf:$REDIS_CONF \
-           --detach redis:5.0.3-alpine \
+           --detach redis:5.0.9-alpine \
            redis-server $REDIS_CONF
 
 docker run --name container-$STAMP-with-redis \
