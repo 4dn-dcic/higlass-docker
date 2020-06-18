@@ -62,17 +62,17 @@ echo $AWS_BUCKET3
 echo $AWS_BUCKET4
 
 # 4dn uses our own higlass-docker image
-REPO=4dndcic/higlass-docker
-docker pull $REPO # Defaults to "latest", but just speeds up the build, so precise version doesn't matter.
+#REPO=4dndcic/higlass-docker
+#docker pull $REPO # Defaults to "latest", but just speeds up the build, so precise version doesn't matter.
 # docker build --cache-from $REPO \
 docker build --cache-from image-$STAMP \
              --build-arg WORKERS=$WORKERS \
-	         --build-arg KEY=$AWS_ACCESS_KEY_ID \
-	         --build-arg SECRET=$AWS_SECRET_ACCESS_KEY \
-	         --build-arg BUCKET=$AWS_BUCKET \
-	         --build-arg BUCKET2=$AWS_BUCKET2 \
+	           --build-arg KEY=$AWS_ACCESS_KEY_ID \
+	           --build-arg SECRET=$AWS_SECRET_ACCESS_KEY \
+	           --build-arg BUCKET=$AWS_BUCKET \
+	           --build-arg BUCKET2=$AWS_BUCKET2 \
              --build-arg BUCKET3=$AWS_BUCKET3 \
-	         --build-arg BUCKET4=$AWS_BUCKET4 \
+	           --build-arg BUCKET4=$AWS_BUCKET4 \
              --tag image-$STAMP \
              web-context
 

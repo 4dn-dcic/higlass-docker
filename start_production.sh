@@ -5,7 +5,7 @@ set -v
 # Docker image is pinned here, so that you can checkout older
 # versions of this script, and get reproducible deployments.
 # DOCKER_VERSION is the version of 4dndcic/higlass-docker
-DOCKER_VERSION=v0.0.4
+DOCKER_VERSION=v0.0.5
 IMAGE=4dndcic/higlass-docker:$DOCKER_VERSION
 STAMP=`date +"%Y-%m-%d_%H-%M-%S"`
 PORT=80
@@ -63,6 +63,10 @@ for DIR in redis-data hg-data/log hg-tmp hg-data/media hg-data/media/$AWS_BUCKET
   mkdir -p $VOLUME/$DIR || echo "$VOLUME/$DIR already exists"
 done
 
+# Create the s3fs cache directory
+S3FS_CACHE_DIR=/tmp/higlass-docker/s3fs-cache
+mkdir -p $S3FS_CACHE_DIR || echo "$S3FS_CACHE_DIR already exists"
+
 REDIS_HOST=container-redis-$STAMP
 
 # TODO: Should probably make a Dockerfile if configuration gets any more complicated.
@@ -80,9 +84,10 @@ docker run --name container-$STAMP-with-redis \
            --publish $PORT:80 \
            --volume $VOLUME/hg-data:/data \
            --volume $VOLUME/hg-tmp:/tmp \
+           --volume $S3FS_CACHE_DIR:/s3fs_cache \
            --env REDIS_HOST=$REDIS_HOST \
            --env REDIS_PORT=6379 \
-	       --privileged \
+	         --privileged \
            --detach \
            --publish-all \
            $IMAGE
