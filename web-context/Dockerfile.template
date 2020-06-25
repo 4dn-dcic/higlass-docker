@@ -65,7 +65,7 @@ RUN pip install -r requirements.txt
 RUN pip install clodius==<CLODIUS_VERSION>
 RUN pip install pybbi==<PYBBI_VERSION>
 
-RUN pip install simple-s3fs
+RUN pip install simple-s3fs==0.1.4
 
 WORKDIR /home/higlass/projects
 RUN chown higlass:higlass .
