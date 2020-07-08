@@ -9,6 +9,7 @@ DOCKER_VERSION=v0.0.5
 IMAGE=4dndcic/higlass-docker:$DOCKER_VERSION
 STAMP=`date +"%Y-%m-%d_%H-%M-%S"`
 PORT=80
+FLASK_PORT=8005
 
 # NOTE: No parameters should change the behavior in a deep way:
 # We want the tests to cover the same setup as in production.
@@ -30,6 +31,8 @@ check_var "$AWS_BUCKET2"
 check_var "$AWS_BUCKET3"
 check_var "$AWS_BUCKET4"
 
+# stop all running containers
+#sudo docker ps -a -q | xargs sudo docker stop
 
 while getopts 'i:s:p:v:' OPT; do
   case $OPT in
@@ -63,10 +66,6 @@ for DIR in redis-data hg-data/log hg-tmp hg-data/media hg-data/media/$AWS_BUCKET
   mkdir -p $VOLUME/$DIR || echo "$VOLUME/$DIR already exists"
 done
 
-# Create the s3fs cache directory
-S3FS_CACHE_DIR=/tmp/higlass-docker/s3fs-cache
-mkdir -p $S3FS_CACHE_DIR || echo "$S3FS_CACHE_DIR already exists"
-
 REDIS_HOST=container-redis-$STAMP
 
 # TODO: Should probably make a Dockerfile if configuration gets any more complicated.
@@ -82,12 +81,12 @@ docker run --name $REDIS_HOST \
 docker run --name container-$STAMP-with-redis \
            --network network-$STAMP \
            --publish $PORT:80 \
+           --publish $FLASK_PORT:8005 \
            --volume $VOLUME/hg-data:/data \
            --volume $VOLUME/hg-tmp:/tmp \
-           --volume $S3FS_CACHE_DIR:/s3fs_cache \
            --env REDIS_HOST=$REDIS_HOST \
            --env REDIS_PORT=6379 \
-	         --privileged \
+               --privileged \
            --detach \
            --publish-all \
            $IMAGE

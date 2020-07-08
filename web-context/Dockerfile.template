@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
         zlib1g-dev \
         libcurl4-openssl-dev \
         g++ \
-        vim \
+        nano \
         build-essential \
         libssl-dev \
         libpng-dev \
@@ -43,6 +43,21 @@ RUN conda install -c conda-forge --yes 'icu=58.*'
 RUN conda install -c conda-forge --yes libiconv
 # RUN pip install uwsgi==2.0.17
 
+# goofys setup
+WORKDIR /tmp
+ENV PATH=$PATH:/usr/local/go/bin
+ARG GOVER=1.13.1
+RUN curl -O https://storage.googleapis.com/golang/go${GOVER}.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go${GOVER}.linux-amd64.tar.gz && \
+    rm go${GOVER}.linux-amd64.tar.gz
+
+RUN curl -L -O https://github.com/kahing/catfs/releases/download/v0.8.0/catfs && \
+    mv catfs /usr/bin && chmod 0755 /usr/bin/catfs
+
+ENV PATH=$PATH:/root/go/bin
+WORKDIR /root/go/src/github.com/kahing/goofys
+RUN git clone --recursive --depth 1 https://github.com/kahing/goofys.git --branch v0.23.1 .
+RUN go get . && make install
 
 # Setup home directory
 RUN groupadd -r higlass && useradd -r -g higlass higlass
@@ -64,8 +79,6 @@ RUN wget https://raw.githubusercontent.com/higlass/higlass-server/master/require
 RUN pip install -r requirements.txt
 RUN pip install clodius==<CLODIUS_VERSION>
 RUN pip install pybbi==<PYBBI_VERSION>
-
-RUN pip install simple-s3fs==0.1.4
 
 WORKDIR /home/higlass/projects
 RUN chown higlass:higlass .
@@ -140,9 +153,6 @@ COPY uwsgi.ini .
 # Helper scripts
 COPY *.sh ./
 
-## Copy AWS credential file
-COPY .aws/* /root/.aws/
-
 
 RUN rm /etc/nginx/sites-*/default && grep 'listen' /etc/nginx/sites-*/*
 # Without this, two config files are trying to grab port 80:
@@ -154,11 +164,12 @@ EXPOSE 80
 ENV HIGLASS_SERVER_BASE_DIR /data
 VOLUME /data
 
+# mount the goofyfs file system through supervisor
+# make sure env is set here
 ARG KEY
-ENV AWS_ACCESS_KEY ${KEY}
+ENV AWS_ACCESS_KEY_ID ${KEY}
 ARG SECRET
 ENV AWS_SECRET_ACCESS_KEY ${SECRET}
-
 ARG BUCKET
 ENV AWS_BUCKET ${BUCKET}
 ARG BUCKET2
@@ -177,6 +188,9 @@ RUN echo "AWS_BUCKET3: $BUCKET3"
 RUN echo "AWS_BUCKET4: $BUCKET4"
 
 RUN pip install pyppeteer
+
+RUN pip install Flask
+COPY flask-api.py .
 
 # TODO: Needs to write to logs, but running as root is risky
 # Given as list so that an extra shell does not need to be started.
