@@ -60,6 +60,7 @@ echo $AWS_BUCKET
 echo $AWS_BUCKET2
 echo $AWS_BUCKET3
 echo $AWS_BUCKET4
+echo $AWS_BUCKET5
 
 # 4dn uses our own higlass-docker image
 #REPO=4dndcic/higlass-docker
@@ -73,6 +74,7 @@ docker build --cache-from image-$STAMP \
 	           --build-arg BUCKET2=$AWS_BUCKET2 \
              --build-arg BUCKET3=$AWS_BUCKET3 \
 	           --build-arg BUCKET4=$AWS_BUCKET4 \
+             --build-arg BUCKET5=$AWS_BUCKET5 \
              --tag image-$STAMP \
              web-context
 

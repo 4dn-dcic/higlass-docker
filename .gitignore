@@ -5,3 +5,4 @@
 web-context/Dockerfile
 web-context/higlass-server
 stack-test.yml
+.DS_Store
