@@ -40,7 +40,7 @@ RUN apt-get --allow-releaseinfo-change update && apt-get install -y \
 RUN conda install --yes cython==0.29.30 numpy
 RUN conda install --yes --channel bioconda pysam htslib
 RUN conda install -c conda-forge --yes uwsgi==2.0.20
-RUN conda install -c conda-forge --yes icu 
+RUN conda install -c conda-forge --yes icu
 RUN conda install -c conda-forge --yes libiconv
 # RUN pip install uwsgi==2.0.17
 
@@ -59,7 +59,7 @@ ENV PATH=$PATH:/root/go/bin
 RUN mkdir -p /root/go/bin/
 WORKDIR /root/go/src/github.com/kahing/goofys
 RUN curl -L -O https://github.com/kahing/goofys/releases/download/v0.24.0/goofys && \
-    mv /root/go/src/github.com/kahing/goofys/goofys /root/go/bin/ && chmod 0755 /root/go/bin/goofys 
+    mv /root/go/src/github.com/kahing/goofys/goofys /root/go/bin/ && chmod 0755 /root/go/bin/goofys
 
 # Setup home directory
 RUN groupadd -r higlass && useradd -r -g higlass higlass

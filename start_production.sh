@@ -88,15 +88,15 @@ docker run --name container-$STAMP-with-redis \
            --volume $VOLUME/hg-tmp:/tmp \
            -e REDIS_HOST=$REDIS_HOST \
            -e REDIS_PORT=6379 \
-	   -e AWS_ACCESS_KEY_ID \
-	   -e AWS_SECRET_KEY \
-	   -e AWS_SECRET_ACCESS_KEY \
-	   -e AWS_BUCKET \
+           -e AWS_ACCESS_KEY_ID \
+           -e AWS_SECRET_KEY \
+           -e AWS_SECRET_ACCESS_KEY \
+           -e AWS_BUCKET \
            -e AWS_BUCKET2 \
-	   -e AWS_BUCKET3 \
-	   -e AWS_BUCKET4 \
-	   -e AWS_BUCKET5 \
-	   --privileged \
+           -e AWS_BUCKET3 \
+           -e AWS_BUCKET4 \
+           -e AWS_BUCKET5 \
+           --privileged \
            --detach \
            --publish-all \
            $IMAGE
