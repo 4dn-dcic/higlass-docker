@@ -66,15 +66,8 @@ echo $AWS_BUCKET5
 #REPO=4dndcic/higlass-docker
 #docker pull $REPO # Defaults to "latest", but just speeds up the build, so precise version doesn't matter.
 # docker build --cache-from $REPO \
-docker build --cache-from image-$STAMP \
+docker build \
              --build-arg WORKERS=$WORKERS \
-	           --build-arg KEY=$AWS_ACCESS_KEY_ID \
-	           --build-arg SECRET=$AWS_SECRET_ACCESS_KEY \
-	           --build-arg BUCKET=$AWS_BUCKET \
-	           --build-arg BUCKET2=$AWS_BUCKET2 \
-             --build-arg BUCKET3=$AWS_BUCKET3 \
-	           --build-arg BUCKET4=$AWS_BUCKET4 \
-             --build-arg BUCKET5=$AWS_BUCKET5 \
              --tag image-$STAMP \
              web-context
 

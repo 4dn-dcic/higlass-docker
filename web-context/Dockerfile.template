@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:4.6.14
+FROM continuumio/miniconda3:4.7.12
 
 # NOTE: Versions have been pinned everywhere. These are the latest versions at the moment, because
 # I want to ensure predictable behavior, but I don't know of any problems with higher versions:
@@ -7,13 +7,13 @@ FROM continuumio/miniconda3:4.6.14
 # "pip install clodius" complained about missing gcc,
 # and "apt-get install gcc" failed and suggested apt-get update.
 # (Was having some trouble with installs, so split it up for granular caching.)
-RUN apt-get update && apt-get install -y \
+RUN apt-get --allow-releaseinfo-change update && apt-get install -y \
         gcc \
         nginx \
         supervisor \
         unzip \
         uwsgi-plugin-python3 \
-        zlib1g-dev \
+        libjpeg-dev zlib1g-dev \
         libcurl4-openssl-dev \
         g++ \
         nano \
@@ -30,16 +30,17 @@ RUN apt-get update && apt-get install -y \
         libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
         libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
         libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
-        libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
-        libnss3 \
+        libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 libffi-dev \
+        libnss3 ca-certificates apt-transport-https \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && update-ca-certificates
 
 # Keep big dependencies which are unlikely to change near the top of this file.
-RUN conda install --yes cython==0.25.2 numpy=1.12.0
-RUN conda install --yes --channel bioconda pysam htslib=1.3.2
-RUN conda install -c conda-forge --yes uwsgi==2.0.18
-RUN conda install -c conda-forge --yes 'icu=58.*'
+RUN conda install --yes cython==0.29.30 numpy
+RUN conda install --yes --channel bioconda pysam htslib
+RUN conda install -c conda-forge --yes uwsgi==2.0.20
+RUN conda install -c conda-forge --yes icu 
 RUN conda install -c conda-forge --yes libiconv
 # RUN pip install uwsgi==2.0.17
 
@@ -55,9 +56,10 @@ RUN curl -L -O https://github.com/kahing/catfs/releases/download/v0.8.0/catfs &&
     mv catfs /usr/bin && chmod 0755 /usr/bin/catfs
 
 ENV PATH=$PATH:/root/go/bin
+RUN mkdir -p /root/go/bin/
 WORKDIR /root/go/src/github.com/kahing/goofys
-RUN git clone --recursive --depth 1 https://github.com/kahing/goofys.git --branch v0.23.1 .
-RUN go get . && make install
+RUN curl -L -O https://github.com/kahing/goofys/releases/download/v0.24.0/goofys && \
+    mv /root/go/src/github.com/kahing/goofys/goofys /root/go/bin/ && chmod 0755 /root/go/bin/goofys 
 
 # Setup home directory
 RUN groupadd -r higlass && useradd -r -g higlass higlass
@@ -71,6 +73,7 @@ USER higlass
 # The idea is that you want to be able to release small updates to the code,
 # without having to refetch all dependencies.
 USER root
+RUN pip install --upgrade pip
 RUN pip install pyBigWig
 # Version 0.10.1 does not build with Python 3.6 so we have to stick to 0.10.0
 RUN pip install cytoolz==0.10.0
@@ -166,29 +169,11 @@ VOLUME /data
 
 # mount the goofyfs file system through supervisor
 # make sure env is set here
-ARG KEY
-ENV AWS_ACCESS_KEY_ID ${KEY}
-ARG SECRET
-ENV AWS_SECRET_ACCESS_KEY ${SECRET}
-ARG BUCKET
-ENV AWS_BUCKET ${BUCKET}
-ARG BUCKET2
-ENV AWS_BUCKET2 ${BUCKET2}
-ARG BUCKET3
-ENV AWS_BUCKET3 ${BUCKET3}
-ARG BUCKET4
-ENV AWS_BUCKET4 ${BUCKET4}
-ARG BUCKET5
-ENV AWS_BUCKET5 ${BUCKET5}
-
+# note: in the past, credentials and other config were passed at build time
+# these are now passed at runtime - Will August 3rd 2022
 ARG WORKERS
 ENV WORKERS ${WORKERS}
 RUN echo "WORKERS: $WORKERS"
-RUN echo "AWS_BUCKET: $BUCKET"
-RUN echo "AWS_BUCKET2: $BUCKET2"
-RUN echo "AWS_BUCKET3: $BUCKET3"
-RUN echo "AWS_BUCKET4: $BUCKET4"
-RUN echo "AWS_BUCKET5: $BUCKET5"
 
 RUN pip install pyppeteer
 
