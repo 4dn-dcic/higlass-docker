@@ -1,31 +1,31 @@
 #!/usr/bin/env bash
 set -e
 
-STAMP='default'
+VERSION='default'
 
-WEB_APP_VERSION='1.1.8'
+WEB_APP_VERSION='1.1.11'
 HIPILER_VERSION='1.4.0'
-SERVER_VERSION='1.14.1'
-LIBRARY_VERSION='1.9.3'
-MULTIVEC_VERSION='0.2.4'
-CLODIUS_VERSION='0.14.3'
+SERVER_VERSION='1.14.8'
+LIBRARY_VERSION='1.11.4'
+MULTIVEC_VERSION='0.2.7'
+CLODIUS_VERSION='0.19.0'
 PYBBI_VERSION='0.2.2'
 TIME_INTERVAL_TRACK_VERSION='0.2.0-rc.2'
 LINEAR_LABELS_TRACK_VERSION='0.1.6'
 LABELLED_POINTS_TRACK_VERSION='0.1.12'
 BEDLIKE_TRIANGLES_TRACK_VERSION='0.1.2'
 RANGE_TRACK_VERSION='0.1.1'
-PILEUP_VERSION='0.2.11'
+PILEUP_VERSION='1.1.0'
 
 usage() {
   echo "USAGE: $0 -w WORKERS [-s STAMP] [-l]" >&2
   exit 1
 }
 
-while getopts 's:w:l' OPT; do
+while getopts 'v:w:l' OPT; do
   case $OPT in
-    s)
-      STAMP=$OPTARG
+    v)
+      VERSION=$OPTARG
       ;;
     w)
       WORKERS=$OPTARG
@@ -68,7 +68,8 @@ echo $AWS_BUCKET5
 # docker build --cache-from $REPO \
 docker build \
              --build-arg WORKERS=$WORKERS \
-             --tag image-$STAMP \
-             web-context
+             --tag 4dndcic/higlass-docker:$VERSION \
+             --tag 4dndcic/higlass-docker:latest \
+	     web-context
 
 rm web-context/Dockerfile # Ephemeral: We want to prevent folks from editing it by mistake.

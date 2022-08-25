@@ -79,8 +79,8 @@ docker run --name $REDIS_HOST \
            --detach redis:5.0.9-alpine \
            redis-server $REDIS_CONF
 
-# Pass all env vars are runtime
-docker run --name container-$STAMP-with-redis \
+# Pass all env vars at runtime
+docker run --name higlass-container \
            --network network-$STAMP \
            --publish $PORT:80 \
            --publish $FLASK_PORT:8005 \
