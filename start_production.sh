@@ -59,6 +59,9 @@ if [ -z "$VOLUME" ]; then
     VOLUME=/tmp/higlass-docker/volume-$STAMP-with-redis
 fi
 
+# Clean up stopped containers - if not done could lead to conflicts when restarting container
+docker system prune -f
+
 docker network create --driver bridge network-$STAMP
 
 # Create all directories we need. These will be mounted to data, so really
