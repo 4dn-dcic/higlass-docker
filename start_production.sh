@@ -5,7 +5,7 @@ set -v
 # Docker image is pinned here, so that you can checkout older
 # versions of this script, and get reproducible deployments.
 # DOCKER_VERSION is the version of 4dndcic/higlass-docker
-DOCKER_VERSION=v0.0.6
+DOCKER_VERSION=v0.1.0
 IMAGE=4dndcic/higlass-docker:$DOCKER_VERSION
 STAMP=`date +"%Y-%m-%d_%H-%M-%S"`
 PORT=80
@@ -59,6 +59,9 @@ if [ -z "$VOLUME" ]; then
     VOLUME=/tmp/higlass-docker/volume-$STAMP-with-redis
 fi
 
+# Clean up stopped containers - if not done could lead to conflicts when restarting container
+docker system prune -f
+
 docker network create --driver bridge network-$STAMP
 
 # Create all directories we need. These will be mounted to data, so really
@@ -79,15 +82,24 @@ docker run --name $REDIS_HOST \
            --detach redis:5.0.9-alpine \
            redis-server $REDIS_CONF
 
-docker run --name container-$STAMP-with-redis \
+# Pass all env vars at runtime
+docker run --name higlass-container \
            --network network-$STAMP \
            --publish $PORT:80 \
            --publish $FLASK_PORT:8005 \
            --volume $VOLUME/hg-data:/data \
            --volume $VOLUME/hg-tmp:/tmp \
-           --env REDIS_HOST=$REDIS_HOST \
-           --env REDIS_PORT=6379 \
-               --privileged \
+           -e REDIS_HOST=$REDIS_HOST \
+           -e REDIS_PORT=6379 \
+           -e AWS_ACCESS_KEY_ID \
+           -e AWS_SECRET_KEY \
+           -e AWS_SECRET_ACCESS_KEY \
+           -e AWS_BUCKET \
+           -e AWS_BUCKET2 \
+           -e AWS_BUCKET3 \
+           -e AWS_BUCKET4 \
+           -e AWS_BUCKET5 \
+           --privileged \
            --detach \
            --publish-all \
            $IMAGE
