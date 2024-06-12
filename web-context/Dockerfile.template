@@ -80,7 +80,7 @@ RUN pip install pyBigWig
 RUN pip install cytoolz
 # This is *not* tagged: The idea here is *not* to bust the cache on every minor version.
 #RUN wget https://raw.githubusercontent.com/higlass/higlass-server/v<SERVER_VERSION>/requirements.txt
-# We maintain our own version here. Needed to updage cooler to get a compatible version of cytoolz
+# We maintain our own version here. Needed to update higlass-python to get a compatible version of cytoolz
 COPY higlass-server-requirements.txt ./
 RUN pip install -r higlass-server-requirements.txt
 
