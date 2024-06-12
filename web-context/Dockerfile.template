@@ -77,7 +77,7 @@ USER higlass
 # without having to refetch all dependencies.
 USER root
 RUN pip install pyBigWig
-RUN pip install cytoolz==0.10.1
+RUN pip install cytoolz
 # This is *not* tagged: The idea here is *not* to bust the cache on every minor version.
 RUN wget https://raw.githubusercontent.com/higlass/higlass-server/v<SERVER_VERSION>/requirements.txt
 RUN pip install -r requirements.txt
